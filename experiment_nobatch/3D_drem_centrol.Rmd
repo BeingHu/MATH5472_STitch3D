@@ -1,0 +1,53 @@
+```{r}
+rm(list = ls())
+options(warn=-1)
+library(rgl)
+library(misc3d)
+
+options(rgl.printRglwidget = TRUE)
+setupKnitr()  
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+
+```
+
+```{r}
+source("/home/bhuaq/STitch3D/math5472/nobatch/plot3D_func.R")
+
+```
+
+```{r}
+celltypes <- c("CNS")
+celltype_colors <- c("#1f77b4")
+um <- c(0.9817252, -0.02731942, 0.1883346, 0,
+        -0.1564891, -0.67904097, 0.7172270, 0,
+        0.1082924, -0.73359174, -0.6709063, 0,
+        0, 0, 0, 1) #set the initial view of the 3D plot
+spot_radius <- 0.5
+axis_rescale <- c(1, 1, 1.5)
+alpha_threshold <- 0.5
+alpha_background <- 0.02
+
+# 使用 open3d() 创建新的3D窗口
+open3d()
+
+plot3D_proportions(directory = "/home/bhuaq/STitch3D/math5472/results_nobatch/results_Drosophila_embryo",
+                   celltypes = celltypes,
+                   celltype_colors = celltype_colors,
+                   um = um,
+                   spot_radius = spot_radius,
+                   alpha_threshold = alpha_threshold,
+                   alpha_background = alpha_background
+                   )
+
+
+box3d()
+axis3d("x-+")
+axis3d("y-+")
+axis3d("z-+")
+title3d(xlab = "x", ylab = "y")
+mtext3d("z", "z-+", line = 4)
+
+
+rglwidget()
+
+```

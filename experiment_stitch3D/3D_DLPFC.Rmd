@@ -1,0 +1,106 @@
+```{r}
+rm(list = ls())
+options(warn=-1)
+library(rgl)
+library(misc3d)
+
+options(rgl.printRglwidget = TRUE)
+setupKnitr()  
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+```
+
+```{r}
+source("/home/bhuaq/STitch3D/math5472/STitch3D/plot3D_func.R")
+
+```{r}
+directory = "/home/bhuaq/STitch3D/math5472/results_sitich3D/dlpfc"
+file_list <- list.files(path = directory)
+n_slice <- sum(unlist(lapply(file_list, function(x){startsWith(x, "prop_slice")})))
+
+#spatial domains
+cluster <- read.table(paste0(directory, "/clustering_result.csv"), sep=",", header=TRUE)
+colnames(cluster)[1] <- "spot"
+
+#cell-type proportions
+for (i in (0:(n_slice-1))){
+    prop <- read.table(paste0(directory, "/prop_slice", i, ".csv"), sep=",", header=TRUE)
+    if (i == 0){
+        prop_all <- prop
+    }else{
+        prop_all <- rbind(prop_all, prop)
+    }
+}
+colnames(prop_all)[1] <- "spot"
+
+#3D coordinates
+coor_3d <- read.table(paste0(directory, "/3D_coordinates.csv"), sep=",", header=TRUE)
+colnames(coor_3d)[1] <- "spot"
+spots.table <- merge(coor_3d, prop_all, by=c("spot"))
+spots.table <- merge(spots.table, cluster, by=c("spot"))
+spots.table$x = -spots.table$x
+spots.table$z = (spots.table$z - (spots.table$z > 14) * 397.3) * 200
+spots.table$x = spots.table$x / 1.37
+spots.table$y = spots.table$y / 1.37
+spots.table$z = spots.table$z / 1.37
+```
+
+```{r}
+color = c('#575d6d','#a59c74','#fee838','#00224e','#7d7c78','#d2c060','#2a3f6d')
+
+#open3d(windowRect = c(0, 0, 720, 720))
+```
+
+```{r}
+#par3d(persp)
+```
+
+```{r}
+plot3d(spots.table$x, spots.table$y, spots.table$z,
+col = color[spots.table$GM+1],
+type = "s",
+radius = 60)
+um <- c(-0.99877554, 0.03325806, 0.0366205, 0,
+0.01137521, -0.56603873, 0.8243002, 0,
+0.04814347, 0.82370752, 0.5649671, 0,
+0.0000000, 0.0000000, 0.0000000, 1)
+view3d(userMatrix = matrix(um, byrow=TRUE, nrow=4))
+box3d()
+axis3d("x-+")
+axis3d("y-+")
+axis3d("z-+", at=c(0, 2000, 4000, 6000), labels=c(0.0, 10, 310, 320))
+title3d(xlab = "x", ylab = "y")
+mtext3d("z", "z-+", line = 4)
+rglwidget()
+```
+
+```{r}
+ct = "Ex_8_L5_6"
+
+#open3d(windowRect = c(0, 0, 720, 720))
+```
+
+```{r}
+#par3d(persp)
+```
+
+```{r}
+open3d()
+spots.table$color <- "gray"
+spots.table$color[spots.table[, ct] > 0.2] <- "purple"
+spots.table$alpha <- spots.table[, ct]
+spots.table$alpha[spots.table[, ct] <= 0.2] <- 0.02
+plot3d(spots.table$x, spots.table$y, spots.table$z,
+col = spots.table$color,
+type = "s",
+radius = 100,
+alpha = spots.table$alpha)
+view3d(userMatrix = matrix(um, byrow=TRUE, nrow=4))
+box3d()
+axis3d("x-+")
+axis3d("y-+")
+axis3d("z-+", at=c(0, 2000, 4000, 6000), labels=c(0.0, 10, 310, 320))
+title3d(xlab = "x", ylab = "y")
+mtext3d("z", "z-+", line = 4)
+rglwidget()
+```
+

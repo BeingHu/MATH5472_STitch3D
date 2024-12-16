@@ -1,0 +1,54 @@
+```{r}
+rm(list = ls())
+options(warn=-1)
+library(rgl)
+library(misc3d)
+
+# 设置 WebGL
+options(rgl.printRglwidget = TRUE)
+setupKnitr()  # 如果在 RMarkdown 中使用
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+
+```
+
+```{r}
+source("/home/bhuaq/STitch3D/math5472/STitch3D/plot3D_func.R")
+
+```
+
+```{r}
+celltypes <- c("foregut", "hindgut", "midgut", "proventriculus")
+celltype_colors <- c("#98df8a", "#d62728", "#9467bd", "#f7b6d2")
+um <- c(0.990102768, -0.1285097, 0.0564082, 0,
+        -0.140251085, -0.9206678, 0.3642811, 0,
+        0.005119142, -0.3685868, -0.9295793, 0,
+        0, 0, 0, 1) #set the initial view of the 3D plot
+spot_radius <- 0.5
+axis_rescale <- c(1, 1, 1.5)
+alpha_threshold <- 0.5
+alpha_background <- 0.02
+
+# 使用 open3d() 创建新的3D窗口
+open3d()
+
+plot3D_proportions(directory = "/home/bhuaq/STitch3D/math5472/results_sitich3D/results_Drosophila_embryo",
+                   celltypes = celltypes,
+                   celltype_colors = celltype_colors,
+                   um = um,
+                   spot_radius = spot_radius,
+                   alpha_threshold = alpha_threshold,
+                   alpha_background = alpha_background
+                   )
+
+# 添加坐标轴和标签
+box3d()
+axis3d("x-+")
+axis3d("y-+")
+axis3d("z-+")
+title3d(xlab = "x", ylab = "y")
+mtext3d("z", "z-+", line = 4)
+
+# 使用 rglwidget() 在RMarkdown中显示交互式3D图形
+rglwidget()
+
+```
